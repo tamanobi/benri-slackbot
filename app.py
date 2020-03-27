@@ -2,11 +2,14 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello_world():
-    return 'いえーい、見てる？'
-
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET', 'POST'])
 def root_post():
+    print(request)
+    challenge_token = request.json['challenge']
+    return jsonify(challenge=challenge_token)
+
+@app.route('/listening', methods=['GET', 'POST'])
+def hear():
+    print(request)
     challenge_token = request.json['challenge']
     return jsonify(challenge=challenge_token)
