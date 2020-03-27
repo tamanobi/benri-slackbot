@@ -2,7 +2,9 @@ from flask import Flask, request, jsonify
 import requests
 import json
 import os
+import feedparser
 from dotenv import load_dotenv
+import random
 
 load_dotenv()
 app = Flask(__name__)
@@ -26,13 +28,19 @@ def hear():
         if bot_id is not None and bot_id == 'B010WR2FE2C':
             return jsonify({})
         endpoint = os.environ['SLACK_WEBHOOK']
+        if 'text' not in request.json['event']:
+            return jsonify({})
+
         text = request.json['event']['text']
 
         user = event['user']
-        # メンションをし返す
-        text = text.replace('<@U010KB4S65R>', f"<@{user}>")
+        RSS_URL = "https://b.hatena.ne.jp/hotentry/it.rss"
 
-        payload = {"text":text}
+        d = feedparser.parse(RSS_URL)
+        text = "\n".join([
+            f"{entry.title}: {entry.link}" for entry in random.sample(d.entries, 3)
+        ])
+        payload = {"text": f"<@{user}> {text}"}
         res = requests.post(endpoint,data=json.dumps(payload))
 
     return jsonify({})
