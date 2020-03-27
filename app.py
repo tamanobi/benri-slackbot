@@ -1,5 +1,10 @@
 from flask import Flask, request, jsonify
+import requests
+import json
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -15,7 +20,14 @@ def hear():
         return jsonify(challenge=challenge_token)
 
     if 'event' in request.json:
+        event = request.json['event']
+        bot_id = event.get('bot_id')
+        if bot_id is not None and bot_id == 'B010WR2FE2C':
+            return jsonify({})
+
+        endpoint = os.environ['SLACK_WEBHOOK']
         text = request.json['event']['text']
-        print(text)
+        payload = {"text":text}
+        res = requests.post(endpoint,data=json.dumps(payload))
 
     return jsonify({})
