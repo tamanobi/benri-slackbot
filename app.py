@@ -10,6 +10,12 @@ def root_post():
 
 @app.route('/listening', methods=['GET', 'POST'])
 def hear():
-    print(request)
-    challenge_token = request.json['challenge']
-    return jsonify(challenge=challenge_token)
+    if 'challenge' in request.json:
+        challenge_token = request.json['challenge']
+        return jsonify(challenge=challenge_token)
+
+    if 'event' in request.json:
+        text = request.json['event']['text']
+        print(text)
+
+    return jsonify({})
