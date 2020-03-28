@@ -40,6 +40,32 @@ def hear():
         if "<@U010KB4S65R>" not in text:
             # メンションじゃない場合は無視する
             return jsonify({})
+        if "占い" in text or "うらない" in text or "うらなって" in text or "占って":
+            request_date = date.today().isoformat().replace("-", "/")
+            fortune_endpoint = (
+                f"http://api.jugemkey.jp/api/horoscope/free/{request_date}"
+            )
+            fortune_res = requests.get(fortune_endpoint)
+            fortune = fortune_res.json()
+            if fortune_res.status_code != 200 or fortune is None:
+                payload = {"text": f"<@{user}> 占いに失敗しました"}
+                requests.post(endpoint, data=json.dumps(payload))
+                return jsonify({})
+
+            # fortune["horoscope"]["2020/03/28"] をするコード
+            sign_list = fortune.get("horoscope", {}).get(request_date, {})
+            if sign_list == {}:
+                payload = {"text": f"<@{user}> 占いに失敗しました"}
+                requests.post(endpoint, data=json.dumps(payload))
+                return jsonify({})
+
+            messages = [sign["sign"] + ": " + sign["content"] for sign in sign_list]
+            message.append("powerd by JugemKey")
+            message.append("【PR】原宿占い館 塔里木")
+
+            payload = {"text": "\n".join(messages)}
+            res = requests.post(endpoint, data=json.dumps(payload))
+            return jsonify({})
 
         user = event["user"]
         RSS_URL = "https://b.hatena.ne.jp/hotentry/it.rss"
