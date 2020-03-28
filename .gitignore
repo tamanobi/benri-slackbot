@@ -111,5 +111,6 @@ dmypy.json
 
 .venv
 .env
-
 .now
+ngrok
+.vscode
