@@ -36,8 +36,10 @@ def hear():
         endpoint = os.environ["SLACK_WEBHOOK"]
         if "text" not in request_obj["event"]:
             return jsonify({})
-
         text = request_obj["event"]["text"]
+        if "<@U010KB4S65R>" not in text:
+            # メンションじゃない場合は無視する
+            return jsonify({})
 
         user = event["user"]
         RSS_URL = "https://b.hatena.ne.jp/hotentry/it.rss"
