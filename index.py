@@ -5,6 +5,7 @@ import os
 import feedparser
 from dotenv import load_dotenv
 import random
+from datetime import date
 
 load_dotenv()
 app = Flask(__name__)
@@ -31,7 +32,7 @@ def hear():
         event = request_obj["event"]
         print(event)
         bot_id = event.get("bot_id")
-        if bot_id is not None and bot_id == "B010WR2FE2C":
+        if bot_id == "B010WR2FE2C":
             return jsonify({})
         endpoint = os.environ["SLACK_WEBHOOK"]
         if "text" not in request_obj["event"]:
@@ -60,8 +61,7 @@ def hear():
                 return jsonify({})
 
             messages = [sign["sign"] + ": " + sign["content"] for sign in sign_list]
-            message.append("powerd by JugemKey")
-            message.append("【PR】原宿占い館 塔里木")
+            messages.append("powerd by JugemKey 【PR】原宿占い館 塔里木")
 
             payload = {"text": "\n".join(messages)}
             res = requests.post(endpoint, data=json.dumps(payload))
