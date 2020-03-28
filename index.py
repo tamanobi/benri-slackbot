@@ -18,24 +18,26 @@ def root_post():
 
 @app.route("/listening", methods=["GET", "POST"])
 def hear():
-    if not request:
+    # https://werkzeug.palletsprojects.com/en/0.15.x/wrappers/#werkzeug.wrappers.json.JSONMixin.get_json
+    request_obj = request.get_json()
+    if request_obj is None:
         return jsonify({})
 
-    if "challenge" in request.json:
-        challenge_token = request.json["challenge"]
+    if "challenge" in request_obj:
+        challenge_token = request_obj["challenge"]
         return jsonify(challenge=challenge_token)
 
-    if "event" in request.json:
-        event = request.json["event"]
+    if "event" in request_obj:
+        event = request_obj["event"]
         print(event)
         bot_id = event.get("bot_id")
         if bot_id is not None and bot_id == "B010WR2FE2C":
             return jsonify({})
         endpoint = os.environ["SLACK_WEBHOOK"]
-        if "text" not in request.json["event"]:
+        if "text" not in request_obj["event"]:
             return jsonify({})
 
-        text = request.json["event"]["text"]
+        text = request_obj["event"]["text"]
 
         user = event["user"]
         RSS_URL = "https://b.hatena.ne.jp/hotentry/it.rss"
